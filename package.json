@@ -1,16 +1,10 @@
 {
-	"name": "@grind-t/lib",
+	"name": "@grind-t/telegram-mcp",
 	"version": "1.0.0",
 	"type": "module",
-	"files": ["dist"],
-	"exports": {
-		".": {
-			"import": "./dist/index.js",
-			"require": "./dist/index.umd.cjs",
-			"types": "./dist/index.d.ts"
-		}
-	},
+	"bin": "./dist/index.js",
 	"scripts": {
+		"dev": "npx @modelcontextprotocol/inspector node --env-file=.env --experimental-transform-types --watch lib/index.ts",
 		"check": "tsc --noEmit",
 		"lint": "npx @biomejs/biome check --write ./lib",
 		"test": "node --experimental-transform-types --experimental-test-module-mocks --test",
@@ -18,13 +12,13 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/grind-t/lib.git"
+		"url": "git+https://github.com/grind-t/telegram-mcp.git"
 	},
 	"license": "ISC",
 	"bugs": {
-		"url": "https://github.com/grind-t/lib/issues"
+		"url": "https://github.com/grind-t/telegram-mcp/issues"
 	},
-	"homepage": "https://github.com/grind-t/lib#readme",
+	"homepage": "https://github.com/grind-t/telegram-mcp#readme",
 	"devDependencies": {
 		"@biomejs/biome": "latest",
 		"@microsoft/api-extractor": "latest",
@@ -32,5 +26,10 @@
 		"@types/node": "latest",
 		"tsup": "latest",
 		"typescript": "latest"
+	},
+	"dependencies": {
+		"@modelcontextprotocol/sdk": "^1.23.0-beta.0",
+		"@mtcute/node": "^0.27.1",
+		"zod": "^4.1.13"
 	}
 }
