@@ -1,11 +1,15 @@
+import { title } from "node:process";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { TelegramClient } from "@mtcute/node";
 import z from "zod";
 import {
 	PeerInputSchema,
 	resolvePeerFromInput,
-} from "../common/utils/peerInput.ts";
-import { PeerOutputSchema, peerToOutput } from "../common/utils/peerOutput.ts";
+} from "../common/schemas/PeerInput.ts";
+import {
+	PeerOutputSchema,
+	peerToOutput,
+} from "../common/schemas/PeerOutput.ts";
 import { toolError } from "../common/utils/toolError.ts";
 import { toolJson } from "../common/utils/toolJson.ts";
 
@@ -22,30 +26,23 @@ export const iterDialogsTool = (
 				archived: z
 					.literal(["exclude", "only", "keep"])
 					.optional()
-					.describe("How to handle archived chats? Default - exclude"),
+					.describe("Filter archived dialogs"),
 				limit: z
 					.number()
 					.optional()
-					.describe(
-						"Limits the number of dialogs to be received. Default - no limit",
-					),
-				folderId: z
-					.number()
-					.optional()
-					.describe("ID of the folder from which the dialogs will be fetched"),
+					.describe("Limit the number of dialogs to retrieve"),
+				folderId: z.number().optional().describe("Filter dialogs by folder ID"),
 				folderTitle: z
 					.string()
 					.optional()
-					.describe(
-						"Title of the folder from which the dialogs will be fetched",
-					),
+					.describe("Filter dialogs by folder title"),
 				offsetPeer: PeerInputSchema.optional().describe(
 					"Offset peer used as an anchor for pagination",
 				),
 				pinned: z
 					.literal(["include", "exclude", "only", "keep"])
 					.optional()
-					.describe("How to handle pinned dialogs? Default - include"),
+					.describe("Filter pinned dialogs"),
 			},
 			outputSchema: {
 				dialogs: z.array(
@@ -55,6 +52,16 @@ export const iterDialogsTool = (
 						unreadCount: z.number(),
 						unreadMentionsCount: z.number(),
 						muteUntil: z.number().nullish(),
+						forumTopics: z
+							.array(
+								z.object({
+									id: z.number(),
+									title: z.string(),
+									unreadCount: z.number(),
+									unreadMentionsCount: z.number(),
+								}),
+							)
+							.optional(),
 					}),
 				),
 			},
@@ -71,6 +78,18 @@ export const iterDialogsTool = (
 					pinned,
 				})) {
 					const { peer, unreadCount, unreadMentionsCount, raw } = dialog;
+					const forumTopics = [];
+
+					if (peer.type === "chat" && peer.isForum) {
+						for await (const topic of tg.iterForumTopics(peer)) {
+							forumTopics.push({
+								id: topic.id,
+								title: topic.title,
+								unreadCount: topic.unreadCount,
+								unreadMentionsCount: topic.unreadMentionsCount,
+							});
+						}
+					}
 
 					dialogs.push({
 						peer: peerToOutput(peer),
@@ -78,6 +97,7 @@ export const iterDialogsTool = (
 						unreadCount,
 						unreadMentionsCount,
 						muteUntil: raw.notifySettings.muteUntil,
+						forumTopics: forumTopics.length ? forumTopics : undefined,
 					});
 				}
 

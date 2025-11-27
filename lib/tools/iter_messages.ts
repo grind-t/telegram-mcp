@@ -1,12 +1,15 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SearchFilters, type TelegramClient } from "@mtcute/node";
 import z from "zod";
-import { SearchFilterSchema } from "../common/schemas/SearchFilter.ts";
 import {
 	PeerInputSchema,
 	resolvePeerFromInput,
-} from "../common/utils/peerInput.ts";
-import { PeerOutputSchema, peerToOutput } from "../common/utils/peerOutput.ts";
+} from "../common/schemas/PeerInput.ts";
+import {
+	PeerOutputSchema,
+	peerToOutput,
+} from "../common/schemas/PeerOutput.ts";
+import { SearchFilterSchema } from "../common/schemas/SearchFilter.ts";
 import { toolError } from "../common/utils/toolError.ts";
 import { toolJson } from "../common/utils/toolJson.ts";
 
@@ -32,7 +35,7 @@ export const iterMessagesTool = (
 					.optional(),
 				threadId: z
 					.number()
-					.describe("Filter messages by thread (topic)")
+					.describe("Filter messages by thread (forum topic)")
 					.optional(),
 				filter: SearchFilterSchema.optional(),
 				minId: z.number().describe("Filter by minimum message ID").optional(),
