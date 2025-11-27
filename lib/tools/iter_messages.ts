@@ -2,6 +2,10 @@ import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { SearchFilters, type TelegramClient } from "@mtcute/node";
 import z from "zod";
 import {
+	type Message,
+	MessageSchema,
+} from "../common/schemas/MessageSchema.ts";
+import {
 	PeerInputSchema,
 	resolvePeerFromInput,
 } from "../common/schemas/PeerInput.ts";
@@ -10,9 +14,9 @@ import {
 	peerToOutput,
 } from "../common/schemas/PeerOutput.ts";
 import { SearchFilterSchema } from "../common/schemas/SearchFilter.ts";
+import { attempt } from "../common/utils/attempt.ts";
 import { toolError } from "../common/utils/toolError.ts";
 import { toolJson } from "../common/utils/toolJson.ts";
-import { attempt } from "../common/utils/withFallback.ts";
 
 export const iterMessagesTool = (
 	register: McpServer["registerTool"],
@@ -65,34 +69,7 @@ export const iterMessagesTool = (
 					.optional(),
 			},
 			outputSchema: {
-				messages: z.array(
-					z.object({
-						id: z
-							.number()
-							.describe("Unique message identifier inside this chat"),
-						date: z.string().describe("Date when the message was sent"),
-						isMention: z
-							.boolean()
-							.describe(
-								"Whether this message contains mention of the current user",
-							),
-						isOutgoing: z
-							.boolean()
-							.describe(
-								"Whether the message is incoming (received) or outgoing (sent by you)",
-							),
-						sender: PeerOutputSchema.describe("Message sender"),
-						senderDisplayName: z
-							.string()
-							.describe("Display name of the message sender"),
-						text: z.string().describe("Message text"),
-						mediaType: z
-							.string()
-							.nullish()
-							.describe("Type of media in the message"),
-						link: z.string().describe("Link to the message").optional(),
-					}),
-				),
+				messages: z.array(MessageSchema),
 			},
 		},
 		async ({
@@ -118,7 +95,7 @@ export const iterMessagesTool = (
 					),
 				]);
 
-				const messages = [];
+				const messages: Message[] = [];
 
 				for await (const message of tg.iterSearchMessages({
 					chatId: chatIdPeer,

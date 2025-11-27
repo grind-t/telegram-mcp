@@ -1,15 +1,13 @@
-import { title } from "node:process";
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { TelegramClient } from "@mtcute/node";
 import z from "zod";
+import { type Dialog, DialogSchema } from "../common/schemas/Dialog.ts";
+import type { ForumTopic } from "../common/schemas/ForumTopic.ts";
 import {
 	PeerInputSchema,
 	resolvePeerFromInput,
 } from "../common/schemas/PeerInput.ts";
-import {
-	PeerOutputSchema,
-	peerToOutput,
-} from "../common/schemas/PeerOutput.ts";
+import { peerToOutput } from "../common/schemas/PeerOutput.ts";
 import { toolError } from "../common/utils/toolError.ts";
 import { toolJson } from "../common/utils/toolJson.ts";
 
@@ -37,30 +35,12 @@ export const iterDialogsTool = (
 				),
 			},
 			outputSchema: {
-				dialogs: z.array(
-					z.object({
-						peer: PeerOutputSchema,
-						displayName: z.string(),
-						unreadCount: z.number(),
-						unreadMentionsCount: z.number(),
-						muteUntil: z.number().nullish(),
-						forumTopics: z
-							.array(
-								z.object({
-									id: z.number(),
-									title: z.string(),
-									unreadCount: z.number(),
-									unreadMentionsCount: z.number(),
-								}),
-							)
-							.optional(),
-					}),
-				),
+				dialogs: z.array(DialogSchema),
 			},
 		},
 		async ({ limit, folderId, folderTitle, offsetPeer }) => {
 			try {
-				const dialogs = [];
+				const dialogs: Dialog[] = [];
 
 				for await (const dialog of tg.iterDialogs({
 					folder: folderId ?? folderTitle,
@@ -68,9 +48,10 @@ export const iterDialogsTool = (
 					offsetPeer: await resolvePeerFromInput(tg, offsetPeer),
 				})) {
 					const { peer, unreadCount, unreadMentionsCount, raw } = dialog;
-					const forumTopics = [];
+					let forumTopics: ForumTopic[] | undefined;
 
 					if (peer.type === "chat" && peer.isForum) {
+						forumTopics = [];
 						for await (const topic of tg.iterForumTopics(peer)) {
 							forumTopics.push({
 								id: topic.id,
@@ -87,7 +68,7 @@ export const iterDialogsTool = (
 						unreadCount,
 						unreadMentionsCount,
 						muteUntil: raw.notifySettings.muteUntil,
-						forumTopics: forumTopics.length ? forumTopics : undefined,
+						forumTopics,
 					});
 				}
 
