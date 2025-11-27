@@ -8,5 +8,7 @@
 		"erasableSyntaxOnly": true,
 		"verbatimModuleSyntax": true,
 		"strict": true
-	}
+	},
+	"include": ["lib/**/*.ts"],
+	"exclude": ["node_modules", "dist"]
 }
