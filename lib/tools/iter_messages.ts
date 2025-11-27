@@ -12,6 +12,7 @@ import {
 import { SearchFilterSchema } from "../common/schemas/SearchFilter.ts";
 import { toolError } from "../common/utils/toolError.ts";
 import { toolJson } from "../common/utils/toolJson.ts";
+import { attempt } from "../common/utils/withFallback.ts";
 
 export const iterMessagesTool = (
 	register: McpServer["registerTool"],
@@ -89,6 +90,7 @@ export const iterMessagesTool = (
 							.string()
 							.nullish()
 							.describe("Type of media in the message"),
+						link: z.string().describe("Link to the message").optional(),
 					}),
 				),
 			},
@@ -141,6 +143,7 @@ export const iterMessagesTool = (
 						senderDisplayName: message.sender.displayName,
 						text: message.text,
 						mediaType: message.media?.type,
+						link: attempt(() => message.link, undefined),
 					});
 				}
 

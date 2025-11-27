@@ -23,10 +23,6 @@ export const iterDialogsTool = (
 			title: "Iterate over Telegram dialogs",
 			description: "Iterate over Telegram dialogs",
 			inputSchema: {
-				archived: z
-					.literal(["exclude", "only", "keep"])
-					.optional()
-					.describe("Filter archived dialogs"),
 				limit: z
 					.number()
 					.optional()
@@ -39,10 +35,6 @@ export const iterDialogsTool = (
 				offsetPeer: PeerInputSchema.optional().describe(
 					"Offset peer used as an anchor for pagination",
 				),
-				pinned: z
-					.literal(["include", "exclude", "only", "keep"])
-					.optional()
-					.describe("Filter pinned dialogs"),
 			},
 			outputSchema: {
 				dialogs: z.array(
@@ -66,16 +58,14 @@ export const iterDialogsTool = (
 				),
 			},
 		},
-		async ({ archived, limit, folderId, folderTitle, offsetPeer, pinned }) => {
+		async ({ limit, folderId, folderTitle, offsetPeer }) => {
 			try {
 				const dialogs = [];
 
 				for await (const dialog of tg.iterDialogs({
-					archived,
 					folder: folderId ?? folderTitle,
 					limit,
 					offsetPeer: await resolvePeerFromInput(tg, offsetPeer),
-					pinned,
 				})) {
 					const { peer, unreadCount, unreadMentionsCount, raw } = dialog;
 					const forumTopics = [];
