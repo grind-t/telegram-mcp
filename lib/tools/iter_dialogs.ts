@@ -3,11 +3,9 @@ import type { TelegramClient } from "@mtcute/node";
 import z from "zod";
 import { type Dialog, DialogSchema } from "../common/schemas/Dialog.ts";
 import type { ForumTopic } from "../common/schemas/ForumTopic.ts";
-import {
-	PeerInputSchema,
-	resolvePeerFromInput,
-} from "../common/schemas/PeerInput.ts";
-import { peerToOutput } from "../common/schemas/PeerOutput.ts";
+import { PeerInputSchema } from "../common/schemas/PeerInput.ts";
+import { resolvePeerFromInput } from "../common/utils/peerFromInput.ts";
+import { peerToOutput } from "../common/utils/peerToOutput.ts";
 import { toolError } from "../common/utils/toolError.ts";
 import { toolJson } from "../common/utils/toolJson.ts";
 

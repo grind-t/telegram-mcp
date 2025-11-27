@@ -5,16 +5,11 @@ import {
 	type Message,
 	MessageSchema,
 } from "../common/schemas/MessageSchema.ts";
-import {
-	PeerInputSchema,
-	resolvePeerFromInput,
-} from "../common/schemas/PeerInput.ts";
-import {
-	PeerOutputSchema,
-	peerToOutput,
-} from "../common/schemas/PeerOutput.ts";
+import { PeerInputSchema } from "../common/schemas/PeerInput.ts";
 import { SearchFilterSchema } from "../common/schemas/SearchFilter.ts";
 import { attempt } from "../common/utils/attempt.ts";
+import { resolvePeerFromInput } from "../common/utils/peerFromInput.ts";
+import { peerToOutput } from "../common/utils/peerToOutput.ts";
 import { toolError } from "../common/utils/toolError.ts";
 import { toolJson } from "../common/utils/toolJson.ts";
 

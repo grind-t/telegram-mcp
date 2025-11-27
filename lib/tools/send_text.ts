@@ -1,10 +1,8 @@
 import type { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import type { TelegramClient } from "@mtcute/node";
 import z from "zod";
-import {
-	PeerInputSchema,
-	resolvePeerFromInput,
-} from "../common/schemas/PeerInput.ts";
+import { PeerInputSchema } from "../common/schemas/PeerInput.ts";
+import { resolvePeerFromInput } from "../common/utils/peerFromInput.ts";
 import { toolError } from "../common/utils/toolError.ts";
 import { toolJson } from "../common/utils/toolJson.ts";
 
