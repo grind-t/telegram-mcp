@@ -1,4 +1,3 @@
-import { getMarkedPeerId, type TelegramClient, type tl } from "@mtcute/node";
 import z from "zod";
 
 export const PeerInputSchema = z.object({
