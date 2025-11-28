@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { env } from "node:process";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
@@ -29,8 +31,6 @@ const tg = new TelegramClient({
 	storage: new MemoryStorage(),
 });
 
-await tg.importSession(SESSION);
-
 const server = new McpServer({
 	name: "telegram-mcp",
 	version: "1.0.0",
@@ -44,4 +44,6 @@ iterMessagesTool(registerTool, tg);
 sendTextTool(registerTool, tg);
 unreadDialogsPrompt(registerPrompt);
 
-server.connect(new StdioServerTransport());
+tg.importSession(SESSION).then(() =>
+	server.connect(new StdioServerTransport()),
+);
