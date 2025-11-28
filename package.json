@@ -2,7 +2,7 @@
 	"name": "@grind-t/telegram-mcp",
 	"version": "1.0.3",
 	"type": "module",
-	"bin": "./dist/index.js",
+	"bin": "./dist/index.cjs",
 	"scripts": {
 		"dev": "npx @modelcontextprotocol/inspector node --env-file=.env --experimental-transform-types --watch lib/index.ts",
 		"check": "tsc --noEmit",

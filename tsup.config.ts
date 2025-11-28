@@ -4,6 +4,6 @@ export default defineConfig({
 	name: "@grind-t/telegram-mcp",
 	entry: ["lib/index.ts"],
 	outDir: "dist",
-	format: ["esm"],
+	format: ["cjs"],
 	clean: true,
 });
