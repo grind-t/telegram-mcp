@@ -13,6 +13,8 @@ export const sendTextTool = (
 	register(
 		"send_text",
 		{
+			title: "Send Telegram message",
+			description: "Send Telegram message",
 			inputSchema: {
 				dialog: PeerInputSchema.describe(
 					"Target dialog to send the message to",

@@ -3,6 +3,7 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import { MemoryStorage, TelegramClient } from "@mtcute/node";
 import z from "zod";
+import { unreadDialogsPrompt } from "./prompts/unread_dialogs.ts";
 import { iterDialogsTool } from "./tools/iter_dialogs.ts";
 import { iterMessagesTool } from "./tools/iter_messages.ts";
 import { sendTextTool } from "./tools/send_text.ts";
@@ -36,9 +37,11 @@ const server = new McpServer({
 });
 
 const registerTool = server.registerTool.bind(server);
+const registerPrompt = server.registerPrompt.bind(server);
 
 iterDialogsTool(registerTool, tg);
 iterMessagesTool(registerTool, tg);
 sendTextTool(registerTool, tg);
+unreadDialogsPrompt(registerPrompt);
 
 server.connect(new StdioServerTransport());
